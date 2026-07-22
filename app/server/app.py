@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_from_directory
 import hashlib
 import uuid
 from app.classes.Server import Server
@@ -28,16 +28,13 @@ def signup():
 
 @app.route('/dashboard')
 def dashboard():
-    print(tokens)
     token = request.args.get('token')
     username = request.args.get('username')
 
     if token is None or username is None:
-        print("no token")
         return render_template('login.html')
 
     if tokens.get(username) != uuid.UUID(token):
-        print("invalid token")
         return render_template('login.html')
     
     return render_template('dashboard.html')
