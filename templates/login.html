@@ -21,12 +21,12 @@
           <label>Password</label>
         </div>
 
-        <button type="submit">Login</button>
+        <button type="submit" id="login-button">Login</button>
 
         <p id="message"></p>
       </form>
     </div>
 
-    <script src="script.js"></script>
+    <script src="{{ url_for('static', filename='scripts/login.js')}}"></script>
   </body>
 </html>
