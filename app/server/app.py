@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 import hashlib
 import uuid
+from app.classes.Server import Server
 
 app = Flask(__name__, template_folder="../../templates",
             static_folder="../../static")
@@ -8,6 +9,7 @@ app = Flask(__name__, template_folder="../../templates",
 usernames: list[str] = []
 passwords = []
 tokens: dict[str, uuid.UUID] = {}
+servers: Server = []
 
 usernames.append('dev_test123')
 devPass = hashlib.sha256()
@@ -23,6 +25,22 @@ def home():
 @app.route('/signup')
 def signup():
     return render_template('signup.html')
+
+@app.route('/dashboard')
+def dashboard():
+    print(tokens)
+    token = request.args.get('token')
+    username = request.args.get('username')
+
+    if token is None or username is None:
+        print("no token")
+        return render_template('login.html')
+
+    if tokens.get(username) != uuid.UUID(token):
+        print("invalid token")
+        return render_template('login.html')
+    
+    return render_template('dashboard.html')
 
 @app.route('/api/login', methods=['POST'])
 def api_login():

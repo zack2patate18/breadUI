@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/dashboard.css')}}">
+    <title>Server Dashboard</title>
+
+    <style>
+      
+    </style>
+  </head>
+
+  <body>
+    <aside class="sidebar">
+      <h2>Dashboard</h2>
+
+      <a href="/dashboard">Dashboard</a>
+      <a href="/logout">Log out</a>
+    </aside>
+
+    <main class="content">
+      <section class="stats">
+        <div class="card">
+          <h3>Active servers</h3>
+          <p>12</p>
+        </div>
+
+        <div class="card">
+          <h3>Online players</h3>
+          <p>87</p>
+        </div>
+      </section>
+
+      <section class="servers">
+        <h2>Servers</h2>
+
+        <div class="server">
+          <div>
+            <h3>Survival Minecraft</h3>
+            <p>1.21.1 - Europe</p>
+          </div>
+
+          <div>
+            <p class="online">● Online</p>
+            <p>32 players</p>
+          </div>
+        </div>
+
+        <div class="server">
+          <div>
+            <h3>Modded Server</h3>
+            <p>NeoForge 1.21</p>
+          </div>
+
+          <div>
+            <p class="offline">● Offline</p>
+            <p>0 players</p>
+          </div>
+        </div>
+
+        <div class="server">
+          <div>
+            <h3>Creative</h3>
+            <p>Paper 1.20.1</p>
+          </div>
+
+          <div>
+            <p class="online">● Online</p>
+            <p>55 joueurs</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='scripts/dashboard.js')}}"></script>
+  </body>
+</html>
