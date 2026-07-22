@@ -20,6 +20,10 @@ passwords.append(devPass)
 def home():
     return render_template('login.html')
 
+@app.route('/signup')
+def signup():
+    return render_template('signup.html')
+
 @app.route('/api/login', methods=['POST'])
 def api_login():
     data = request.get_json()
@@ -40,5 +44,27 @@ def api_login():
     tokens[username] = temp_token
 
     return jsonify({"temp_token": temp_token, "message": "logged in"}), 200
+
+@app.route('/api/signup', methods=['POST'])
+def api_signup():
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+    passwordConfirmation = data.get('passwordConfirmation')
+
+    if not username or not passwordConfirmation or not password:
+        return jsonify({"message": "Username or password cannot be empty"}), 400
+
+    if password != passwordConfirmation:
+        return jsonify({"message": "The passwords needs to be the same"}), 400
+    
+    hashed_password = hashlib.sha256()
+    hashed_password.update(password.encode())
+    hashed_password = hashed_password.hexdigest()
+
+    usernames.append(username)
+    passwords.append(hashed_password)
+
+    return jsonify({"message": "Account created"}), 200
 
 app.run('0.0.0.0', 8080, True)
