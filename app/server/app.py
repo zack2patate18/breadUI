@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, send_from_directory
+from flask import Flask, request, jsonify, render_template, redirect
 import hashlib
 import uuid
 from app.classes.Server import Server
@@ -38,6 +38,20 @@ def dashboard():
         return render_template('login.html')
     
     return render_template('dashboard.html')
+
+@app.route('/logout')
+def logout():
+    token = request.args.get('token')
+    username = request.args.get('username')
+
+    if token is None or username is None:
+            return redirect('/')
+    
+    if tokens.get(username) != uuid.UUID(token):
+        return redirect('/')
+
+    del tokens[username]
+    return redirect('/')
 
 @app.route('/api/login', methods=['POST'])
 def api_login():
