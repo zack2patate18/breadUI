@@ -1,0 +1,257 @@
+body {
+    background: #111827;
+    color: white;
+    font-family: Arial, sans-serif;
+    margin: 0;
+}
+
+
+.container {
+    width: 90%;
+    max-width: 1400px;
+    margin: 30px auto;
+}
+
+
+/* Stats */
+
+.stats-box {
+    display: flex;
+    gap: 20px;
+    background: #1f2937;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+
+.stat {
+    flex: 1;
+    background: #374151;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+
+.stat h3 {
+    margin: 0;
+    color: #2acfbc;
+}
+
+
+.stat p {
+    font-size: clamp(18px, 2vw, 24px);
+    margin-top: 10px;
+}
+
+
+
+/* Panel */
+
+.panel {
+    margin-top: 25px;
+    background: #1f2937;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+
+.tabs {
+    display: flex;
+    background: #374151;
+    overflow-x: auto;
+}
+
+
+.tab {
+    flex: 1;
+    min-width: 100px;
+
+    padding: 15px;
+
+    border: none;
+    background: transparent;
+    color: white;
+
+    cursor: pointer;
+
+    transition: all ease-in 0.1s;
+}
+
+
+.tab.active {
+    background: #394a66;
+}
+
+.tab:hover {
+    background: #394a66;
+}
+
+.content {
+    padding: 20px;
+}
+
+
+.tab-content {
+    display: none;
+}
+
+
+.tab-content.active {
+    display: block;
+}
+
+
+
+/* Console */
+
+.terminal {
+    background: black;
+
+    height: min(350px, 45vh);
+
+    padding: 15px;
+
+    overflow-y: auto;
+
+    color: white;
+
+    font-family: monospace;
+
+    border-radius: 8px;
+
+    box-sizing: border-box;
+}
+
+
+.command-input {
+
+    margin-top: 15px;
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 12px;
+
+    background: black;
+
+    color: white;
+
+    border: 1px solid #444;
+
+    border-radius: 6px;
+}
+
+
+
+/* Boutons */
+
+.buttons {
+    margin-top: 15px;
+
+    display: flex;
+
+    gap: 15px;
+
+    justify-content: center;
+
+    flex-wrap: wrap;
+}
+
+
+.start {
+    padding: 10px 25px;
+
+    border-radius: 8px;
+
+    background: transparent;
+
+    color: #4da3ff;
+
+    border: 2px solid #4da3ff;
+
+    cursor: pointer;
+
+    transition: all ease-in 0.1s;
+}
+
+.start:hover {
+    background-color: #4da3ff;
+    color: white;
+}
+
+
+.stop {
+    padding: 10px 25px;
+
+    border-radius: 8px;
+
+    background: red;
+
+    color: white;
+
+    border: 2px solid red;
+
+    cursor: pointer;
+
+    transition: all ease-in 0.2s;
+}
+
+.stop:hover {
+    background-color: transparent;
+    border-radius: 8px;
+}
+
+
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+    .container {
+        width: 95%;
+        margin: 15px auto;
+    }
+
+
+    .stats-box {
+        flex-direction: column;
+        padding: 15px;
+        gap: 12px;
+    }
+
+
+    .stat {
+        padding: 15px;
+    }
+
+
+    .content {
+        padding: 12px;
+    }
+
+
+    .tab {
+        padding: 12px 10px;
+        font-size: 14px;
+    }
+
+
+    .terminal {
+        height: 300px;
+        font-size: 13px;
+    }
+
+
+    .buttons {
+        flex-direction: column;
+    }
+
+
+    .start,
+    .stop {
+        width: 100%;
+    }
+
+}

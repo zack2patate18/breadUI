@@ -45,6 +45,13 @@ def logout():
     session.clear()
     return redirect('/')
 
+@app.route('/server/<int:server_id>')
+def server_route(server_id):
+    if "username" not in session:
+        return redirect('/')
+
+    return render_template('server.html', server_id=server_id)
+
 @app.route('/api/login', methods=['POST'])
 def api_login():
     data = request.get_json()
