@@ -21,9 +21,8 @@ async function login(username, password) {
     message.textContent = resp.message;
 
     if (response.ok) {
-        localStorage.setItem("temp_token", resp.temp_token);
-        localStorage.setItem("username", username);
-        window.location.replace(`/dashboard?token=${encodeURIComponent(localStorage.getItem("temp_token"))}&username=${encodeURIComponent(username)}`)
+        localStorage.clear()
+        window.location.replace("/dashboard")
     }
 
 }

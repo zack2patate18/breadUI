@@ -1,14 +1,18 @@
-from flask import Flask, request, jsonify, render_template, redirect
+from flask import Flask, request, jsonify, render_template, redirect, session
 import hashlib
-import uuid
 from app.classes.Server import Server
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = Flask(__name__, template_folder="../../templates",
             static_folder="../../static")
 
+app.secret_key = os.environ["SECRET_KEY"]
+
 usernames: list[str] = []
 passwords = []
-tokens: dict[str, uuid.UUID] = {}
 servers: Server = []
 
 usernames.append('dev_test123')
@@ -28,29 +32,14 @@ def signup():
 
 @app.route('/dashboard')
 def dashboard():
-    token = request.args.get('token')
-    username = request.args.get('username')
-
-    if token is None or username is None:
-        return render_template('login.html')
-
-    if tokens.get(username) != uuid.UUID(token):
-        return render_template('login.html')
+    if "username" not in session:
+        return redirect('/')
     
     return render_template('dashboard.html')
 
 @app.route('/logout')
 def logout():
-    token = request.args.get('token')
-    username = request.args.get('username')
-
-    if token is None or username is None:
-            return redirect('/')
-    
-    if tokens.get(username) != uuid.UUID(token):
-        return redirect('/')
-
-    del tokens[username]
+    session.clear()
     return redirect('/')
 
 @app.route('/api/login', methods=['POST'])
@@ -69,10 +58,9 @@ def api_login():
     if username not in usernames or hashed_password not in passwords:
         return jsonify({"message": "invalid username or password"}), 401
     
-    temp_token: uuid.UUID = uuid.uuid4()
-    tokens[username] = temp_token
+    session["username"] = username
 
-    return jsonify({"temp_token": temp_token, "message": "logged in"}), 200
+    return jsonify({"message": "logged in"}), 200
 
 @app.route('/api/signup', methods=['POST'])
 def api_signup():
