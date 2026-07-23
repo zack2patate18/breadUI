@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, redirect, session
+from flask import Flask, request, jsonify, render_template, redirect, session, url_for
 import hashlib
 from app.classes.Server import Server
 from dotenv import load_dotenv
@@ -24,6 +24,9 @@ passwords.append(devPass)
 
 @app.route('/')
 def home():
+    if "username" in session:
+        return redirect(url_for('dashboard'))
+    
     return render_template('login.html')
 
 @app.route('/signup')
