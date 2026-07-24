@@ -6,10 +6,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/dashboard.css')}}">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='assets/favicon.ico')}}">
     <title>Server Dashboard</title>
-
-    <style>
-      
-    </style>
   </head>
 
   <body>
@@ -24,56 +20,23 @@
       <section class="stats">
         <div class="card">
           <h3>Active servers</h3>
-          <p>12</p>
+          <p id="active-servers">-</p>
         </div>
 
         <div class="card">
           <h3>Online players</h3>
-          <p>87</p>
+          <p id="online-players">-</p>
         </div>
       </section>
 
       <section class="servers">
         <h2>Servers</h2>
 
-        <div class="server">
-          <div>
-            <h3>Survival Minecraft</h3>
-            <p>1.21.1 - Europe</p>
-          </div>
-
-          <div>
-            <p class="online">● Online</p>
-            <p>32 players</p>
-          </div>
-        </div>
-
-        <div class="server">
-          <div>
-            <h3>Modded Server</h3>
-            <p>NeoForge 1.21</p>
-          </div>
-
-          <div>
-            <p class="offline">● Offline</p>
-            <p>0 players</p>
-          </div>
-        </div>
-
-        <div class="server">
-          <div>
-            <h3>Creative</h3>
-            <p>Paper 1.20.1</p>
-          </div>
-
-          <div>
-            <p class="online">● Online</p>
-            <p>55 joueurs</p>
-          </div>
-        </div>
+        <div id="servers-list"></div>
       </section>
     </main>
 
-    <script src="{{ url_for('static', filename='scripts/dashboard.js')}}"></script>
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='scripts/dashboard.js') }}"></script>
   </body>
 </html>

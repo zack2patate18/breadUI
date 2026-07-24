@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, render_template, redirect, session, url_for
+from flask_socketio import SocketIO, emit, disconnect
 import hashlib
 from app.classes.Server import Server
 from dotenv import load_dotenv
@@ -11,9 +12,11 @@ app = Flask(__name__, template_folder="../../templates",
 
 app.secret_key = os.environ["SECRET_KEY"]
 
+socketio = SocketIO(app)
+
 usernames: list[str] = []
 passwords = []
-servers: Server = []
+servers: list[Server] = []
 
 usernames.append('dev_test123')
 devPass = hashlib.sha256()
@@ -94,4 +97,31 @@ def api_signup():
 
     return jsonify({"message": "Account created"}), 200
 
-app.run('0.0.0.0', 8080, True)
+
+@socketio.on("connect")
+def on_connect():
+    if "username" not in session:
+        disconnect()
+
+@socketio.on("getServersInfos")
+def on_get_servers_infos():
+    servers_infos: list[dict[str, int | str | bool]] = []
+
+    for server in servers:
+        current_server = {
+            "name": server.name,
+            "description": server.description,
+            "online": server.online,
+            "onlinePlayers": server.online_players,
+            "maxPlayer": server.max_player,
+            "version": server.version,
+            "software": server.software,
+            "id": server.server_id
+        }
+
+        servers_infos.append(current_server)
+
+    emit("serversInfos", servers_infos)
+
+# app.run('0.0.0.0', 8080, True)
+socketio.run(app, "0.0.0.0", 8080, debug=True)
