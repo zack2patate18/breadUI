@@ -11,13 +11,14 @@ class Server:
                 self.id = final_id
                 break
 
-    def __init__(self, name: str, version: str, software: str, max_player: int, gen_id: bool = True) -> None:
+    def __init__(self, name: str, description: str, version: str, software: str, max_player: int, gen_id: bool = True) -> None:
         self.name: str = name
         self.version: str = version
         self.software: str = software
         self.max_player: int = max_player
         self.id: int
         self.online: bool = False
+        self.description = description
 
     def to_dict(self):
         return {
