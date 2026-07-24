@@ -34,7 +34,9 @@ class Server:
         return cls(
             data["id"],
             data["name"],
+            data["description"],
             data["version"],
             data["software"],
-            data["max_player"]
+            data["max_player"],
+            data["online_players"]
         )
