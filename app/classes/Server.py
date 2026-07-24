@@ -11,7 +11,7 @@ class Server:
                 self.id = final_id
                 break
 
-    def __init__(self, name: str, description: str, version: str, software: str, max_player: int, gen_id: bool = True) -> None:
+    def __init__(self, name: str, description: str, version: str, software: str, max_player: int, online_players: int, gen_id: bool = True) -> None:
         self.name: str = name
         self.version: str = version
         self.software: str = software
