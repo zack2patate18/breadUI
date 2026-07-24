@@ -18,6 +18,15 @@ usernames: list[str] = []
 passwords = []
 servers: list[Server] = []
 
+servers.append(Server("test", "test superflat world in creative", "1.20.1", "paper", 5, 0, server_list=servers))
+servers[0].online = False
+
+servers.append(Server("test", "test superflat world in creative", "1.20.1", "paper", 20, 2, server_list=servers))
+servers[1].online = True
+
+servers.append(Server("test", "test superflat world in creative", "1.20.1", "paper", 2, 1, server_list=servers))
+servers[2].online = True
+
 usernames.append('dev_test123')
 devPass = hashlib.sha256()
 devPass.update(b"devPass123")
@@ -53,7 +62,15 @@ def server_route(server_id):
     if "username" not in session:
         return redirect('/')
 
-    return render_template('server.html', server_id=server_id)
+    for server in servers:
+        if server.server_id == server_id:
+            return render_template('server.html', server_id=server_id)
+
+    return render_template('404.html')
+
+@app.errorhandler(404)
+def not_found(e):
+    return render_template('404.html')
 
 @app.route('/api/login', methods=['POST'])
 def api_login():

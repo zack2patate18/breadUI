@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 • Page not found</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(-45deg,
+                #0f172a,
+                #111827,
+                #1e3a8a,
+                #312e81);
+            background-size: 400% 400%;
+            animation: gradient 12s ease infinite;
+            color: white;
+            position: relative;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: .35;
+        }
+
+        .blob:nth-child(1) {
+            width: 350px;
+            height: 350px;
+            background: #00b7ff;
+            top: -100px;
+            left: -100px;
+        }
+
+        .blob:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            background: #6d28d9;
+            right: -120px;
+            bottom: -120px;
+        }
+
+        .card {
+            z-index: 2;
+            width: min(700px, 90%);
+            padding: 60px;
+            border-radius: 24px;
+
+            background: rgba(255,255,255,.08);
+            backdrop-filter: blur(18px);
+
+            border: 1px solid rgba(255,255,255,.12);
+
+            text-align: center;
+
+            box-shadow:
+                0 0 60px rgba(0,0,0,.45),
+                inset 0 0 20px rgba(255,255,255,.05);
+        }
+
+        .error {
+            font-size: 8rem;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: 6px;
+
+            background: linear-gradient(90deg,#60a5fa,#22d3ee,#818cf8);
+            -webkit-background-clip: text;
+            color: transparent;
+
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%,100%{
+                transform:translateY(0px);
+            }
+            50%{
+                transform:translateY(-10px);
+            }
+        }
+
+        h1{
+            margin-top:20px;
+            font-size:2.2rem;
+        }
+
+        p{
+            margin-top:15px;
+            color:#d4d4d8;
+            line-height:1.7;
+            font-size:1.1rem;
+        }
+
+        .buttons{
+            margin-top:40px;
+            display:flex;
+            justify-content:center;
+            gap:20px;
+            flex-wrap:wrap;
+        }
+
+        a{
+            text-decoration:none;
+        }
+
+        .btn{
+            padding:15px 30px;
+            border-radius:14px;
+            border:none;
+            cursor:pointer;
+            font-size:1rem;
+            font-weight:bold;
+            transition:.25s;
+        }
+
+        .primary{
+            background:#2563eb;
+            color:white;
+        }
+
+        .primary:hover{
+            background:#3b82f6;
+            transform:translateY(-4px);
+            box-shadow:0 15px 30px rgba(37,99,235,.4);
+        }
+
+        .secondary{
+            background:transparent;
+            color:white;
+            border:2px solid rgba(255,255,255,.2);
+        }
+
+        .secondary:hover{
+            background:rgba(255,255,255,.08);
+            transform:translateY(-4px);
+        }
+    </style>
+</head>
+<body>
+
+<div class="blob"></div>
+<div class="blob"></div>
+
+<div class="card">
+
+    <div class="error">404</div>
+
+    <h1>Looks like you're lost... 👀</h1>
+
+    <p>
+        The page you're looking for doesn't exist,
+        has been moved, or was eaten by a Creeper.
+    </p>
+
+    <div class="buttons">
+        <a href="/">
+            <button class="btn primary">
+                🏠 Go Home
+            </button>
+        </a>
+
+        <button class="btn secondary" onclick="history.back()">
+            ← Go Back
+        </button>
+    </div>
+
+</div>
+
+</body>
+</html>
