@@ -19,6 +19,7 @@ class Server:
         self.id: int
         self.online: bool = False
         self.description = description
+        self.online_players = online_players
 
     def to_dict(self):
         return {
