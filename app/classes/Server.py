@@ -3,11 +3,11 @@ class Server:
 
         max_id: int = 0
 
-        for server_idx in server_list:
+        for server_idx in range(len(server_list)):
             if server_list[server_idx].server_id > max_id:
                 max_id = server_list[server_idx].server_id
 
-        self.server_id = max_id
+        self.server_id = max_id + 1
 
     def __init__(self, name: str, description: str, version: str, software: str, max_player: int, online_players: int, gen_id: bool = True, server_list: list = []) -> None:
         self.name: str = name
