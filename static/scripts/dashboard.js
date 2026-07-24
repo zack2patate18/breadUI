@@ -37,6 +37,10 @@ function addServer(name, description, online, onlinePlayers, maxPlayers, softwar
         </div>
     `;
 
+    server.onclick = () => {
+        window.location.href = `/server/${id}`;
+    };
+
     serversList.appendChild(server);
 };
 
@@ -81,7 +85,7 @@ async function fetchServers() {
 };
 
 socket.on("connect", () => {
-    console.log("connected via websocket"); 
+    console.log("connected via websocket");
 });
 
 socket.on("disconnect", () => {
