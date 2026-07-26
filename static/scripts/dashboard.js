@@ -105,3 +105,7 @@ setInterval(() => {
 addServerButton.addEventListener("click", () => {
     window.location.replace('/server/add')
 })
+
+addEventListener("DOMContentLoaded", (event) => {
+    fetchServers();
+})
