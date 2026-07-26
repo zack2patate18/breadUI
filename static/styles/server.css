@@ -12,9 +12,6 @@ body {
     margin: 30px auto;
 }
 
-
-/* Stats */
-
 .stats-box {
     display: flex;
     gap: 20px;
@@ -44,9 +41,6 @@ body {
     margin-top: 10px;
 }
 
-
-
-/* Panel */
 
 .panel {
     margin-top: 25px;
@@ -103,8 +97,6 @@ body {
 
 
 
-/* Console */
-
 .terminal {
     background: black;
 
@@ -144,8 +136,6 @@ body {
 }
 
 
-
-/* Boutons */
 
 .buttons {
     margin-top: 15px;
@@ -203,9 +193,17 @@ body {
     border-radius: 8px;
 }
 
+#delete-server-button {
+    background-color: red;
+    border: 2px solid red;
+    border-radius: 8px;
+    transition: all 0.3s;
+    padding: 15px;
+}
 
-
-/* Mobile */
+#delete-server-button:hover {
+    box-shadow: 0 0 20px red;
+}
 
 @media (max-width: 600px) {
 

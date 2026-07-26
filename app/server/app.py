@@ -1,3 +1,5 @@
+import shutil
+
 from flask import Flask, request, jsonify, render_template, redirect, session, url_for
 from flask_socketio import SocketIO, emit, disconnect
 import hashlib
@@ -173,6 +175,29 @@ def api_server_list():
         return jsonify({"message": "unauthorized"}), 401
 
     return jsonify({"servers": [s.to_dict() for s in servers]})
+
+@app.route('/api/server/delete', methods=['POST'])
+def api_server_delete():
+    if "username" not in session:
+        return jsonify({"message": "unauthorized"}), 401
+
+    data = request.get_json()
+
+    server_id = int(data["server_id"])
+
+    if not server_id:
+        return jsonify({"message": "invalid request"}), 400
+
+    for server in servers:
+        if server.server_id == server_id:
+            shutil.rmtree(os.path.join(server.root_dir, servers_dir, server.server_root_dir))
+            servers.remove(server)
+            break
+
+    else:
+        return jsonify({"message": "invalid request"}), 400
+
+    return jsonify({"message": "server deleted successfully"}), 200
 
 @socketio.on("connect")
 def on_connect():

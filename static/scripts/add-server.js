@@ -77,9 +77,7 @@ form.addEventListener("submit", async (e) => {
     const data = await response.json();
 
     if (response.ok) {
-        alert(data.message);
         window.location.href = "/dashboard";
-    } else {
-        alert(data.message);
-    }
+    };
+    window.location.replace('/dashboard');
 });
