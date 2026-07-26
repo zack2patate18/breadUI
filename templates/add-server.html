@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/add-server.css')}}">
+    <title>Create Server</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <div class="container">
+        <button id="back-button">Back</button>
+      <h1>Create a Server</h1>
+      <p class="subtitle">Configure your new Minecraft server.</p>
+
+      <form method="POST">
+        <div class="group">
+          <label>Server Name <span class="required">*</span></label>
+          <input
+            type="text"
+            name="name"
+            placeholder="My Awesome Server"
+            required
+          />
+        </div>
+
+        <div class="group">
+          <label>Description</label>
+          <textarea
+            name="description"
+            placeholder="Optional description..."
+          ></textarea>
+        </div>
+
+        <div class="grid">
+          <div class="group">
+            <label>Version <span class="required">*</span></label>
+            <select id="version" name="version" required>
+              <option value="">Loading...</option>
+            </select>
+          </div>
+
+          <div class="group">
+            <label>Software <span class="required">*</span></label>
+            <select id="software" name="software" required>
+              <option value="">Loading...</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="group">
+            <label>Maximum Players <span class="required">*</span></label>
+            <input
+              type="number"
+              name="max_players"
+              min="1"
+              max="1000"
+              value="20"
+              required
+            />
+          </div>
+
+          <div class="group">
+            <label>Port <span class="required">*</span></label>
+            <input
+              type="number"
+              name="port"
+              min="1234"
+              max="65535"
+              value="25565"
+              required
+            />
+          </div>
+        </div>
+
+        <button type="submit">Create Server</button>
+      </form>
+    </div>
+
+    <script src="{{ url_for('static', filename='scripts/add-server.js')}}"></script>
+  </body>
+</html>

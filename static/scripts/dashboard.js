@@ -2,6 +2,7 @@ const logoutButton = document.getElementById('logoutButton');
 const serversList = document.getElementById('servers-list');
 const activeServers = document.getElementById('active-servers');
 const onlinePlayers = document.getElementById('online-players');
+const addServerButton = document.getElementById('add-server-button');
 
 const socket = io();
 
@@ -100,3 +101,7 @@ socket.on("serversInfos", (newServers) => {
 setInterval(() => {
     fetchServers();
 }, 1000)
+
+addServerButton.addEventListener("click", () => {
+    window.location.replace('/server/add')
+})

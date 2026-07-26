@@ -1,0 +1,189 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+    background: #111827;
+    color: white;
+}
+
+.sidebar {
+    width: 250px;
+    background: #1f2937;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar h2 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.sidebar a {
+    color: #d1d5db;
+    text-decoration: none;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    transition: .2s;
+    cursor: pointer;
+}
+
+.sidebar a:hover {
+    background: #374151;
+    color: white;
+}
+
+.container {
+    flex: 1;
+    padding: 40px;
+}
+
+.header {
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #9ca3af;
+}
+
+/* ===== Form Card ===== */
+
+.form-card {
+    background: #1f2937;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 900px;
+}
+
+/* ===== Form ===== */
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.group {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.required {
+    color: #60a5fa;
+}
+
+input,
+textarea,
+select {
+    background: #111827;
+    border: 1px solid #374151;
+    border-radius: 10px;
+    color: white;
+    padding: 14px;
+    font-size: 15px;
+    transition: .2s;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: #60a5fa;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #6b7280;
+}
+
+/* ===== Buttons ===== */
+
+.buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+button {
+    background: #374151;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 15px 24px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+button:hover {
+    background: #4b5563;
+}
+
+#create-button {
+    background: #2563eb;
+}
+
+#create-button:hover {
+    background: #1d4ed8;
+}
+
+#back-button {
+    background: #1f2937;
+}
+
+#back-button:hover {
+    background: #374151;
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 900px) {
+
+    body {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
+
+    .content {
+        padding: 20px;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .buttons {
+        flex-direction: column;
+    }
+}

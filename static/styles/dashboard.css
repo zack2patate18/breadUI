@@ -101,3 +101,19 @@ body {
 .offline {
   color: #ef4444;
 }
+
+#add-server-button {
+  background-color: #1f2937;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 15px;
+  font-size: 16px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+#add-server-button:hover {
+  background-color: #374151;
+}

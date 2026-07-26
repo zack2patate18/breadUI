@@ -4,6 +4,7 @@ import hashlib
 from app.classes.Server import Server
 from dotenv import load_dotenv
 import os
+import json
 
 load_dotenv()
 
@@ -18,14 +19,10 @@ usernames: list[str] = []
 passwords = []
 servers: list[Server] = []
 
-servers.append(Server("test", "test superflat world in creative", "1.20.1", "paper", 5, 0, server_list=servers))
-servers[0].online = False
+softwares: list[str] = ["vanilla"]
+versions: list[str] = ["26.2"]
 
-servers.append(Server("test", "test superflat world in creative", "1.20.1", "paper", 20, 2, server_list=servers))
-servers[1].online = True
-
-servers.append(Server("test", "test superflat world in creative", "1.20.1", "paper", 2, 1, server_list=servers))
-servers[2].online = True
+servers_dir: str = "servers"
 
 usernames.append('dev_test123')
 devPass = hashlib.sha256()
@@ -33,6 +30,23 @@ devPass.update(b"devPass123")
 devPass = devPass.hexdigest()
 
 passwords.append(devPass)
+
+def list_servers():
+    global servers
+    folders: list[str] = [
+        f for f in os.listdir(servers_dir)
+        if os.path.isdir(os.path.join(servers_dir, f))
+    ]
+
+    servers = []
+
+    for fo in folders:
+        for file_name in os.listdir(os.path.join(servers_dir, fo)):
+            if file_name == "breadUI_metadata.json":
+                with open(os.path.join(servers_dir, fo, file_name), 'r') as f:
+                    data: dict = json.load(f)
+                    new_server: Server = Server.from_dict(data)
+                    servers.append(new_server)
 
 @app.route('/')
 def home():
@@ -56,6 +70,13 @@ def dashboard():
 def logout():
     session.clear()
     return redirect('/')
+
+@app.route('/server/add')
+def add_server():
+    if "username" not in session:
+        return redirect('/')
+
+    return render_template('add-server.html')
 
 @app.route('/server/<int:server_id>')
 def server_route(server_id):
@@ -114,6 +135,44 @@ def api_signup():
 
     return jsonify({"message": "Account created"}), 200
 
+@app.route('/api/get-softwares', methods=['GET'])
+def api_get_software():
+    if "username" not in session:
+        return jsonify({}), 401
+
+    return jsonify({"softwares": softwares}), 200
+
+@app.route('/api/get-versions', methods=['GET'])
+def api_get_versions():
+    if "username" not in session:
+        return jsonify({}), 401
+
+    return jsonify({"versions": versions})
+
+@app.route('/api/server/create', methods=['POST'])
+def create_server():
+    data = request.get_json()
+
+    name = data["name"]
+    description = data["description"]
+    version = data["version"]
+    software = data["software"]
+    max_players = data["max_players"]
+    port = data["port"]
+
+    newServer: Server = Server(name, description, version, software, max_players, port, server_list=servers)
+    servers.append(newServer)
+
+    return jsonify({
+        "message": "Server created successfully!"
+    }), 201
+
+@app.route('/api/server/list', methods=['GET'])
+def api_server_list():
+    if "username" not in session:
+        return jsonify({"message": "unauthorized"}), 401
+
+    return jsonify({"servers": [s.to_dict() for s in servers]})
 
 @socketio.on("connect")
 def on_connect():
@@ -139,6 +198,8 @@ def on_get_servers_infos():
         servers_infos.append(current_server)
 
     emit("serversInfos", servers_infos)
+
+list_servers()
 
 # app.run('0.0.0.0', 8080, True)
 socketio.run(app, "0.0.0.0", 8080, debug=True)

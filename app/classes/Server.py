@@ -5,6 +5,7 @@ import threading
 from pathlib import Path
 import shutil
 import time
+import json
 
 class Server:
     def gen_id(self, server_list: list):
@@ -38,7 +39,7 @@ class Server:
         self.new_lines.clear()
         return newLines
 
-    def __init__(self, name: str, description: str, version: str, software: str, max_player: int, online_players: int, gen_id: bool = True, server_list: list = [], xms: str = "1G", xmx: str = "2G", eula: bool = False, new: bool = True) -> None:
+    def __init__(self, name: str, description: str, version: str, software: str, max_player: int, port: int, gen_id: bool = True, server_list: list | None = None, xms: str = "1G", xmx: str = "2G", eula: bool = False, new: bool = True, server_uuid: str | None = None) -> None:
         self.name: str = name
         self.version: str = version
         self.software: str = software
@@ -46,13 +47,16 @@ class Server:
         self.server_id: int
         self.online: bool = False
         self.description = description
-        self.online_players = online_players
+        self.online_players = 0
         self.executable = "server.jar"
         self.root_dir = Path(__file__).resolve().parents[2]
-        self.server_root_dir = str(uuid.uuid4())
+        self.server_uuid = server_uuid
+        if self.server_uuid is None:
+            self.server_uuid = str(uuid.uuid4())
+        self.server_root_dir = self.server_uuid
         self.executable_full_path: str = str(self.root_dir / "servers" / self.server_root_dir)
-        self.xms = xms
-        self.xmx = xmx
+        self.xms: str = xms
+        self.xmx: str = xmx
         self.process: subprocess.Popen[str]
         self.running: bool = False
         self.logs: list[str] = []
@@ -60,18 +64,35 @@ class Server:
         self.handle_output_thread: threading.Thread = threading.Thread(target=self.handle_output)
         self.can_start: bool = True
         self.show_output = False
+        self.port = port
 
-        if os.path.exists(self.executable_full_path) and os.path.isdir(self.executable_full_path):
-            self.can_start = False
-        else:
-            os.mkdir(self.executable_full_path)
-            shutil.copy(os.path.join(self.root_dir, "server.jar"), self.executable_full_path)
+        if new:
+            if gen_id:
+                if server_list is None:
+                    server_list = []
+                self.gen_id(server_list)
 
-            with open(os.path.join(self.root_dir, "servers", self.server_root_dir, 'eula.txt'), 'w') as f:
-                f.write("eula=" + str(eula).lower())
+            if os.path.exists(self.executable_full_path) and os.path.isdir(self.executable_full_path):
+                self.can_start = False
+            else:
+                os.mkdir(self.executable_full_path)
+                shutil.copy(os.path.join(self.root_dir, "server.jar"), self.executable_full_path)
 
-        if gen_id:
-            self.gen_id(server_list)
+                with open(os.path.join(self.root_dir, "servers", self.server_root_dir, 'eula.txt'), 'w') as f:
+                    f.write("eula=" + str(eula).lower())
+
+                with open(os.path.join(self.root_dir, "servers", self.server_root_dir, 'breadUI_metadata.json'), 'w') as f:
+                    json.dump(self.to_dict(), f, indent=4)
+
+                with open(os.path.join(self.root_dir, "servers", self.server_root_dir, 'server.properties'), 'a') as f:
+                    values = self.to_dict()
+                    for k in values.keys():
+                        if k == "max_player":
+                            f.write(f"max-players={values[k]}\n")
+                        elif k == "port":
+                            f.write(f"server-port={values[k]}\n")
+                        elif k == "name":
+                            f.write(f"motd={values[k]}\n")
 
     def stop(self) -> int:
         if self.running and self.process.stdin:
@@ -117,20 +138,27 @@ class Server:
             "executable": self.executable,
             "root_dir": self.server_root_dir,
             "xms": self.xms,
-            "xmx": self.xmx
+            "xmx": self.xmx,
+            "port": self.port
         }
     
     @classmethod
     def from_dict(cls, data):
-        return cls(
-            data["id"],
-            data["name"],
-            data["description"],
-            data["version"],
-            data["software"],
-            data["max_player"],
-            data["executable"],
-            data["root_dir"],
-            data["xms"],
-            data["xmx"]
+        server = cls(
+            name=data["name"],
+            description=data["description"],
+            version=data["version"],
+            software=data["software"],
+            max_player=data["max_player"],
+            port=data["port"],
+            xms=data["xms"],
+            xmx=data["xmx"],
+            gen_id=False,
+            new=False,
+            server_uuid=data["root_dir"]
         )
+
+        server.server_id = data["id"]
+        server.executable = data["executable"]
+
+        return server
