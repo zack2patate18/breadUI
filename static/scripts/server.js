@@ -1,6 +1,7 @@
 const tabs = document.querySelectorAll(".tab");
 const contents = document.querySelectorAll(".tab-content");
 const delete_server_button = document.getElementById("delete-server-button");
+const back_button = document.getElementById("back-button");
 
 tabs.forEach(tab => {
 
@@ -51,3 +52,7 @@ delete_server_button.addEventListener("click", async () => {
         }
     }
 });
+
+back_button.addEventListener("click", () => {
+    window.location.replace('/dashboard');
+})
