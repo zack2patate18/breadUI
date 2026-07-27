@@ -4,18 +4,18 @@ import os
 
 API_BASE = "https://fill.papermc.io/v3/projects/paper"
 
-raw_versions = {}
-versions = []
+raw_paper_versions = {}
+paper_versions = []
 
 def fetch_paper_versions():
-    global raw_versions
+    global raw_paper_versions
     try:
         data = requests.get(API_BASE).json()
         v = data.get("versions")
         if not v:
             return None
 
-        raw_versions = v
+        raw_paper_versions = v
 
     except Exception:
         return None
@@ -65,7 +65,7 @@ def download_paper(version_idx: int, dest: str) -> int:
 fetch_paper_versions()
 
 def get_paper_versions() -> list[str]:
-    global raw_versions
+    global raw_paper_versions
 
     def version_key(v: str):
         match = re.match(r"(\d+)\.(\d+)(?:\.(\d+))?", v)
@@ -80,12 +80,12 @@ def get_paper_versions() -> list[str]:
 
     versions = []
 
-    for branch in sorted(raw_versions.keys(), key=version_key):
+    for branch in sorted(raw_paper_versions.keys(), key=version_key):
         versions.append(branch)
-        versions.extend(sorted(raw_versions[branch], key=version_key))
+        versions.extend(sorted(raw_paper_versions[branch], key=version_key))
 
     versions.reverse()
 
     return versions
 
-versions = get_paper_versions()
+paper_versions = get_paper_versions()

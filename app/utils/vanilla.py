@@ -4,27 +4,27 @@ import os
 
 MANIFEST_URL = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json"
 
-raw_versions = []
-versions = []
+raw_vanilla_versions = []
+vanilla_versions = []
 
 
 def fetch_vanilla_versions():
-    global raw_versions
+    global raw_vanilla_versions
 
     try:
         data = requests.get(MANIFEST_URL).json()
-        raw_versions = data.get("versions", [])
+        raw_vanilla_versions = data.get("versions", [])
     except Exception:
         return None
 
 
 def download_vanilla(version_idx: int, dest: str) -> int:
-    global versions
+    global vanilla_versions
 
-    if version_idx < 0 or version_idx >= len(versions):
+    if version_idx < 0 or version_idx >= len(vanilla_versions):
         return 1
 
-    version = versions[version_idx]
+    version = vanilla_versions[version_idx]
 
     try:
         manifest = requests.get(MANIFEST_URL).json()
@@ -65,7 +65,7 @@ fetch_vanilla_versions()
 
 
 def get_vanilla_versions() -> list[str]:
-    global raw_versions
+    global raw_vanilla_versions
 
     def version_key(v: str):
         match = re.match(r"(\d+)\.(\d+)(?:\.(\d+))?", v)
@@ -80,7 +80,7 @@ def get_vanilla_versions() -> list[str]:
 
     release_versions = [
         v["id"]
-        for v in raw_versions
+        for v in raw_vanilla_versions
         if v["type"] == "release"
     ]
 
@@ -89,4 +89,4 @@ def get_vanilla_versions() -> list[str]:
     return release_versions
 
 
-versions = get_vanilla_versions()
+vanilla_versions = get_vanilla_versions()
