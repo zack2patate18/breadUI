@@ -48,7 +48,7 @@ async function loadSoftwares() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    await Promise.all([loadVersions(), loadSoftwares()]);
+    await Promise.all([loadSoftwares()]);
 });
 
 backButton.addEventListener('click', () => {
