@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify, render_template, redirect, session, u
 from flask_socketio import SocketIO, emit, disconnect
 import hashlib
 from app.classes.Server import Server
+from app.utils.paper import *
 from dotenv import load_dotenv
 import os
 import json
@@ -21,8 +22,8 @@ usernames: list[str] = []
 passwords = []
 servers: list[Server] = []
 
-softwares: list[str] = ["vanilla"]
-versions: list[str] = ["26.2"]
+softwares: list[str] = ["paper"]
+versions: list[str] = get_paper_versions()
 
 servers_dir: str = "servers"
 
@@ -198,6 +199,13 @@ def api_server_delete():
         return jsonify({"message": "invalid request"}), 400
 
     return jsonify({"message": "server deleted successfully"}), 200
+
+@app.route('/api/server/paper/list', methods=['GET'])
+def api_server_paper_list():
+    if "username" not in session:
+        return jsonify({"message": "unauthorized"}), 401
+
+    return jsonify({"version": get_paper_versions()}), 200  
 
 @socketio.on("connect")
 def on_connect():
