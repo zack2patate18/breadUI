@@ -232,7 +232,7 @@ def api_server_start():
         return jsonify({"message": "internal error"}), 500
 
 @app.route('/api/server/stop', methods=['POST'])
-def api_server_start():
+def api_server_stop():
     try:
         if "username" not in session:
             return jsonify({"message": "unauthorized"}), 401
