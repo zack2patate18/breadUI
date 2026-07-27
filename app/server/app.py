@@ -5,6 +5,7 @@ from flask_socketio import SocketIO, emit, disconnect
 import hashlib
 from app.classes.Server import Server
 from app.utils.paper import *
+from app.utils.vanilla import *
 from dotenv import load_dotenv
 import os
 import json
@@ -22,8 +23,8 @@ usernames: list[str] = []
 passwords = []
 servers: list[Server] = []
 
-softwares: list[str] = ["paper"]
-versions: list[str] = get_paper_versions()
+softwares: list[str] = ["paper", "vanilla"]
+versions: dict[str, list[str]] = {"paper": get_paper_versions(), "vanilla": get_vanilla_versions()}
 
 servers_dir: str = "servers"
 
@@ -145,13 +146,19 @@ def api_get_software():
 
     return jsonify({"softwares": softwares}), 200
 
-@app.route('/api/get-versions', methods=['GET'])
-def api_get_versions():
+@app.route('/api/get-paper-versions', methods=['GET'])
+def api_get_paper_versions():
     if "username" not in session:
         return jsonify({}), 401
 
-    return jsonify({"versions": versions})
+    return jsonify({"versions": versions.get('paper')})
 
+@app.route('/api/get-vanilla-versions', methods=['GET'])
+def api_get_vanilla_versions():
+    if "username" not in session:
+        return jsonify({}), 401
+
+    return jsonify({"versions": versions.get('vanilla')})
 @app.route('/api/server/create', methods=['POST'])
 def create_server():
     data = request.get_json()

@@ -1,12 +1,13 @@
 const backButton = document.getElementById('back-button');
 
 const form = document.querySelector('form');
+const softwareInput = document.getElementById('software');
 
 async function loadVersions() {
     const select = document.getElementById("version");
 
     try {
-        const response = await fetch("/api/get-versions");
+        const response = await fetch(`/api/get-${form.software.value}-versions`);
         const data = await response.json();
 
         select.innerHTML = '<option value="">Select version</option>';
@@ -81,3 +82,7 @@ form.addEventListener("submit", async (e) => {
     };
     window.location.replace('/dashboard');
 });
+
+softwareInput.onchange = () => {
+    loadVersions();
+};
