@@ -24,7 +24,7 @@ passwords = []
 servers: list[Server] = []
 
 softwares: list[str] = ["paper", "vanilla"]
-versions: dict[str, list[str]] = {"paper": get_paper_versions(), "vanilla": get_vanilla_versions()}
+paper_versions: dict[str, list[str]] = {"paper": get_paper_versions(), "vanilla": get_vanilla_versions()}
 
 servers_dir: str = "servers"
 
@@ -151,14 +151,14 @@ def api_get_paper_versions():
     if "username" not in session:
         return jsonify({}), 401
 
-    return jsonify({"versions": versions.get('paper')})
+    return jsonify({"versions": paper_versions.get('paper')})
 
 @app.route('/api/get-vanilla-versions', methods=['GET'])
 def api_get_vanilla_versions():
     if "username" not in session:
         return jsonify({}), 401
 
-    return jsonify({"versions": versions.get('vanilla')})
+    return jsonify({"versions": paper_versions.get('vanilla')})
 @app.route('/api/server/create', methods=['POST'])
 def create_server():
     data = request.get_json()
@@ -206,6 +206,30 @@ def api_server_delete():
         return jsonify({"message": "invalid request"}), 400
 
     return jsonify({"message": "server deleted successfully"}), 200
+
+@app.route('/api/server/start', methods=['POST'])
+def api_server_start():
+    try:
+        if "username" not in session:
+            return jsonify({"message": "unauthorized"}), 401
+
+        data = request.get_json()
+        server_id = int(data.get("server_id"))
+
+        if not server_id:
+            return jsonify({"message": "bad request"}), 400
+
+        for s in servers:
+            if s.server_id == server_id:
+                r = s.start_server()
+                if r == 0:
+                    return jsonify({"message": "server start"})
+                else:
+                    return jsonify({"message": "server can't start"})
+        else:
+            return jsonify({"message": "bad request"}), 400
+    except:
+        return jsonify({"message": "internal error"}), 500
 
 @app.route('/api/server/paper/list', methods=['GET'])
 def api_server_paper_list():
