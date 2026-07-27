@@ -21,23 +21,23 @@ def fetch_paper_versions():
         return None
 
 def download_paper(version_idx: int, dest: str) -> int:
-    try:
-        versions = requests.get(API_BASE).json().get("versions")
-        if not versions:
-            return 4
-    except Exception:
-        return 3
+    global paper_versions
 
-    if version_idx < 0 or version_idx >= len(versions):
+    if version_idx < 0 or version_idx >= len(paper_versions):
         return 1
 
-    version = versions[version_idx]
+    version = paper_versions[version_idx]
 
     try:
-        builds = requests.get(f"{API_BASE}/versions/{version}").json().get("builds")
+        builds = requests.get(
+            f"{API_BASE}/versions/{version}"
+        ).json().get("builds")
+
         if not builds:
             return 4
+
         latest_build = builds[-1]
+
     except Exception:
         return 3
 
@@ -48,15 +48,19 @@ def download_paper(version_idx: int, dest: str) -> int:
 
     try:
         file_data = requests.get(download_url)
+
         if file_data.status_code != 200:
             return 3
+
     except Exception:
         return 3
 
     filename = os.path.join(dest, "server.jar")
+
     try:
         with open(filename, "wb") as f:
             f.write(file_data.content)
+
     except Exception:
         return 5
 
