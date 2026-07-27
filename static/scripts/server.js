@@ -72,8 +72,6 @@ startButton.addEventListener("click", async () => {
 
         const data = await response.json();
 
-        console.log(data);
-
         if (!response.ok) {
             console.error(data);
             alert("failed start server");
@@ -82,6 +80,32 @@ startButton.addEventListener("click", async () => {
     } catch (err) {
         console.error(err);
         alert("failed start server");
+    }
+}
+);
+
+stopButton.addEventListener("click", async () => {
+    try {
+        const response = await fetch("/api/server/stop", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                server_id: window.location.pathname.split("/").pop()
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error(data);
+            alert("failed stop server");
+        }
+
+    } catch (err) {
+        console.error(err);
+        alert("failed stop server");
     }
 }
 );
