@@ -6,6 +6,8 @@ from pathlib import Path
 import shutil
 import time
 import json
+from app.utils.vanilla import *
+from app.utils.paper import *
 
 class Server:
     def gen_id(self, server_list: list):
@@ -66,6 +68,14 @@ class Server:
         self.show_output = False
         self.port = port
 
+        if self.software not in ['paper', 'vanilla']:
+            self.can_start = False
+            print("invalid software")
+
+        if self.software == 'paper' and self.version not in get_paper_versions() or self.software == 'vanilla' and self.version not in get_vanilla_versions():
+            self.can_start = False
+            print("invalid version for this software: " + self.software)
+
         if new:
             if gen_id:
                 if server_list is None:
@@ -74,9 +84,18 @@ class Server:
 
             if os.path.exists(self.executable_full_path) and os.path.isdir(self.executable_full_path):
                 self.can_start = False
+                print("server executable already exist and is a directory")
             else:
                 os.mkdir(self.executable_full_path)
-                shutil.copy(os.path.join(self.root_dir, "server.jar"), self.executable_full_path)
+                # shutil.copy(os.path.join(self.root_dir, "server.jar"), self.executable_full_path)
+                if software == 'paper':
+                    download_paper(get_paper_versions().index(self.version), self.executable_full_path)
+                elif software == 'vanilla':
+                    download_vanilla(get_vanilla_versions().index(self.version), self.executable_full_path)
+
+                else:
+                    self.can_start = False
+                    print("invalid software, cant download")
 
                 with open(os.path.join(self.root_dir, "servers", self.server_root_dir, 'eula.txt'), 'w') as f:
                     f.write("eula=" + str(eula).lower())
