@@ -231,6 +231,27 @@ def api_server_start():
     except:
         return jsonify({"message": "internal error"}), 500
 
+@app.route('/api/server/stop', methods=['POST'])
+def api_server_start():
+    try:
+        if "username" not in session:
+            return jsonify({"message": "unauthorized"}), 401
+
+        data = request.get_json()
+        server_id = int(data.get("server_id"))
+
+        if not server_id:
+            return jsonify({"message": "bad request"}), 400
+
+        for s in servers:
+            if s.server_id == server_id:
+                s.stop()
+                return jsonify({"message": "sent stop to server"}), 200
+        else:
+            return jsonify({"message": "bad request"}), 400
+    except:
+        return jsonify({"message": "internal error"}), 500
+
 @app.route('/api/server/paper/list', methods=['GET'])
 def api_server_paper_list():
     if "username" not in session:
