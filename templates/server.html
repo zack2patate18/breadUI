@@ -45,10 +45,8 @@
         <div class="content">
           <!-- Console -->
           <div class="tab-content active" id="console">
-            <div class="terminal">
-              <p>[12:30:01] Server started</p>
-              <p>[12:30:05] Player joined</p>
-              <p>[12:31:22] Saving world...</p>
+            <div class="terminal" id="console-output">
+              <p>Waiting for logs...</p>
             </div>
 
             <input class="command-input" placeholder="Enter command..." />
@@ -81,6 +79,7 @@
       </div>
     </div>
 
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
     <script src="{{ url_for('static', filename='scripts/server.js') }}"></script>
   </body>
 </html>

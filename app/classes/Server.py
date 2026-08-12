@@ -23,17 +23,22 @@ class Server:
     def generate_command(self):
         return f"java -Xms{self.xms} -Xmx{self.xmx} -jar {os.path.join(self.executable_full_path, self.executable)} nogui".split(" ")
 
-    def handle_output(self):
-        if self.process.stdout:
-            for line in self.process.stdout:
-                if self.running:
-                    if self.show_output:
-                        line = line.strip()
-                        self.new_lines.append(line)
-                else:
-                    break
+    def read_stream(self, stream):
+        for line in iter(stream.readline, ''):
+            if line:
+                self.new_lines.append(line.strip())
 
-        self.running = False
+
+    def handle_output(self):
+        threading.Thread(
+            target=self.read_stream,
+            args=(self.process.stdout,)
+        ).start()
+
+        threading.Thread(
+            target=self.read_stream,
+            args=(self.process.stderr,)
+        ).start()
 
     def get_new_log(self) -> list[str]:
         newLines = self.new_lines.copy()
@@ -65,7 +70,7 @@ class Server:
         self.new_lines: list[str] = []
         self.handle_output_thread: threading.Thread = threading.Thread(target=self.handle_output)
         self.can_start: bool = True
-        self.show_output = False
+        self.show_output = True
         self.port = port
 
         if self.software not in ['paper', 'vanilla']:
@@ -139,6 +144,8 @@ class Server:
             return 1
 
         self.process = subprocess.Popen(self.generate_command(), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=os.path.join(self.root_dir, "servers", self.server_root_dir))
+        self.handle_output_thread.start()
+        self.running = True
         return 0
 
     def send(self, inp: str):

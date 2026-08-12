@@ -4,6 +4,10 @@ const delete_server_button = document.getElementById("delete-server-button");
 const back_button = document.getElementById("back-button");
 const startButton = document.getElementsByClassName("start")[0];
 const stopButton = document.getElementsByClassName("stop")[0];
+const server_id = window.location.pathname.split("/").pop();
+const terminal = document.getElementById("console-output");
+
+const socket = io();
 
 tabs.forEach(tab => {
 
@@ -109,3 +113,37 @@ stopButton.addEventListener("click", async () => {
     }
 }
 );
+
+function getServerLog(id) {
+    socket.emit("getServerLog", {
+        server_id: id
+    });
+}
+
+setInterval(() => {
+    getServerLog(server_id);
+}, 1000);
+
+socket.on("connect", () => {
+    console.log("connected via websocket");
+});
+
+socket.on("disconnect", () => {
+    console.error("websocket disconnected");
+});
+
+socket.on("logs", (data) => {
+
+    if (data.logs) {
+        data.logs.forEach(log => {
+
+            const line = document.createElement("p");
+            line.textContent = log;
+
+            terminal.appendChild(line);
+
+            terminal.scrollTop = terminal.scrollHeight;
+        });
+    }
+
+});

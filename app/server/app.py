@@ -249,7 +249,8 @@ def api_server_stop():
                 return jsonify({"message": "sent stop to server"}), 200
         else:
             return jsonify({"message": "bad request"}), 400
-    except:
+    except Exception as e:
+        print(e)
         return jsonify({"message": "internal error"}), 500
 
 @app.route('/api/server/paper/list', methods=['GET'])
@@ -283,6 +284,27 @@ def on_get_servers_infos():
         servers_infos.append(current_server)
 
     emit("serversInfos", servers_infos)
+
+@socketio.on("getServerLog")
+def get_server_log(data):
+    if "username" not in session:
+        return jsonify({"message": "unauthorized"}), 401
+
+    server_id = data.get("server_id")
+
+    if server_id:
+        try:
+            server_id = int(server_id)
+            for s in servers:
+                if s.server_id == server_id:
+                    logs = s.get_new_log()
+                    emit("logs", {
+                        "logs": logs
+                    })
+                    return
+
+        except:
+            return jsonify({"message": "internal error"}), 500
 
 list_servers()
 
