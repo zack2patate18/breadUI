@@ -52,6 +52,22 @@ def list_servers():
                     new_server: Server = Server.from_dict(data)
                     servers.append(new_server)
 
+def get_servers_infos():
+    infos = []
+    for s in servers:
+        s_info = {}
+        s_info["name"] = s.name
+        s_info["description"] = s.description
+        s_info["online"] = s.online
+        s_info["onlinePlayers"] = s.online_players
+        s_info["version"] = s.version
+        s_info["software"] = s.software
+        s_info["maxPlayer"] = s.max_player
+        s_info["id"] = s.server_id
+        infos.append(s_info)
+
+    return infos
+
 @app.route('/')
 def home():
     if "username" in session:
@@ -260,6 +276,15 @@ def api_server_paper_list():
 
     return jsonify({"version": get_paper_versions()}), 200  
 
+@app.route('/api/server/infos', methods=['GET'])
+def api_server_infos():
+    if "username" not in session:
+        return jsonify({"message": "unauthorized"}), 401
+    
+    infos = get_servers_infos()
+
+    return jsonify({"infos": infos}), 200
+
 @socketio.on("connect")
 def on_connect():
     if "username" not in session:
@@ -267,21 +292,8 @@ def on_connect():
 
 @socketio.on("getServersInfos")
 def on_get_servers_infos():
-    servers_infos: list[dict[str, int | str | bool]] = []
-
-    for server in servers:
-        current_server = {
-            "name": server.name,
-            "description": server.description,
-            "online": server.online,
-            "onlinePlayers": server.online_players,
-            "maxPlayer": server.max_player,
-            "version": server.version,
-            "software": server.software,
-            "id": server.server_id
-        }
-
-        servers_infos.append(current_server)
+    
+    servers_infos = get_servers_infos()
 
     emit("serversInfos", servers_infos)
 
