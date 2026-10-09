@@ -9,6 +9,8 @@ const terminal = document.getElementById("console-output");
 
 const socket = io();
 
+let waitingForLogs = true;
+
 tabs.forEach(tab => {
 
     tab.addEventListener("click", () => {
@@ -136,6 +138,11 @@ socket.on("logs", (data) => {
 
     if (data.logs) {
         data.logs.forEach(log => {
+
+            if (waitingForLogs) {
+                waitingForLogs = false;
+                terminal.innerHTML = "";
+            }
 
             const line = document.createElement("p");
             line.textContent = log;
