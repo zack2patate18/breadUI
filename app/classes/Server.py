@@ -180,6 +180,7 @@ class Server:
 
             self.process.wait(timeout=15)
             self.running = False
+            self.online = False
             return 0
 
         except subprocess.TimeoutExpired:
@@ -192,6 +193,7 @@ class Server:
                 self.process.wait()
 
             self.running = False
+            self.online = False
             return 1
 
         except (OSError, ValueError):
@@ -208,6 +210,7 @@ class Server:
         self.process = subprocess.Popen(self.generate_command(), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=os.path.join(self.root_dir, "servers", self.server_root_dir))
         self.handle_output_thread.start()
         self.running = True
+        self.online = True
         return 0
 
     def send(self, inp: str):
