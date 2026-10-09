@@ -171,21 +171,31 @@ class Server:
                         self.can_start = False
 
     def stop(self) -> int:
-        if self.running and self.process.stdin:
-            self.running = False
-            self.process.communicate("/stop")
+        if not self.running or self.process.stdin is None:
+            return 1
+
+        try:
+            self.process.stdin.write("/stop\n")
             self.process.stdin.flush()
-            time.sleep(5)
-            if self.process.poll():
-                return 0
-            else:
-                self.process.terminate()
-                time.sleep(5)
-                if self.process.poll():
-                    return 0
-                else:
-                    return 1
-        return 1
+
+            self.process.wait(timeout=15)
+            self.running = False
+            return 0
+
+        except subprocess.TimeoutExpired:
+            self.process.terminate()
+
+            try:
+                self.process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                self.process.kill()
+                self.process.wait()
+
+            self.running = False
+            return 1
+
+        except (OSError, ValueError):
+            return 1
 
     def kill(self):
         if self.process.poll() is not None:
