@@ -3,6 +3,9 @@ import re
 import os
 
 API_BASE = "https://fill.papermc.io/v3/projects/paper"
+headers = {
+    "User-Agent": "breadUI/0.1 (https://github.com/zack2patate18/breadUI)"
+}
 
 raw_paper_versions = {}
 paper_versions = []
@@ -10,7 +13,7 @@ paper_versions = []
 def fetch_paper_versions():
     global raw_paper_versions
     try:
-        data = requests.get(API_BASE).json()
+        data = requests.get(API_BASE, headers=headers).json()
         v = data.get("versions")
         if not v:
             return None
@@ -29,39 +32,58 @@ def download_paper(version_idx: int, dest: str) -> int:
     version = paper_versions[version_idx]
 
     try:
-        builds = requests.get(
-            f"{API_BASE}/versions/{version}"
-        ).json().get("builds")
+        builds_url = f"{API_BASE}/versions/{version}/builds"
+        response = requests.get(builds_url, headers=headers, timeout=15)
+        response.raise_for_status()
+        builds = response.json()
 
-        if not builds:
-            return 4
+        stable_builds = [
+            build for build in builds
+            if build.get("channel") == "STABLE"
+        ]
 
-        latest_build = builds[-1]
+        if not stable_builds:
+            stable_builds = [
+                build for build in builds
+                if build.get("channel") == "BETA"
+            ]
+
+            if not stable_builds:
+                stable_builds = [
+                    build for build in builds
+                    if build.get("channel") == "ALPHA"
+                ]
+
+        latest_build = max(stable_builds, key=lambda build: build["id"])
 
     except Exception:
         return 3
 
-    download_url = (
-        f"{API_BASE}/versions/{version}/builds/{latest_build}/downloads/"
-        f"paper-{version}-{latest_build}.jar"
-    )
+    download_url = latest_build["downloads"]["server:default"]["url"]
 
     try:
-        file_data = requests.get(download_url)
+        file_data = requests.get(
+            download_url,
+            headers=headers,
+            timeout=60
+        )
+        file_data.raise_for_status()
 
         if file_data.status_code != 200:
             return 3
 
     except Exception:
         return 3
-
-    filename = os.path.join(dest, "server.jar")
+    
+    if os.path.isdir(dest):
+        dest = str(os.path.join(dest, "server.jar"))
 
     try:
-        with open(filename, "wb") as f:
+        with open(dest, "wb") as f:
             f.write(file_data.content)
 
-    except Exception:
+    except Exception as e:
+        print(e)
         return 5
 
     return 0

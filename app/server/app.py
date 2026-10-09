@@ -170,7 +170,7 @@ def create_server():
     max_players = data["max_players"]
     port = data["port"]
 
-    newServer: Server = Server(name, description, version, software, max_players, port, server_list=servers)
+    newServer: Server = Server(name, description, version, software, max_players, port, server_list=servers, create_files=True, new=True)
     servers.append(newServer)
 
     return jsonify({

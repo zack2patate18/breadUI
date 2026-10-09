@@ -45,8 +45,77 @@ class Server:
         self.logs.extend(newLines)
         self.new_lines.clear()
         return newLines
+    
+    def has_server_file(self) -> bool:
+        if os.path.exists(Path(self.executable_full_path) / self.executable):
+            return True
+        return False
+    
+    def create_server_files(self) -> None:
+        os.mkdir(self.executable_full_path)
 
-    def __init__(self, name: str, description: str, version: str, software: str, max_player: int, port: int, gen_id: bool = True, server_list: list | None = None, xms: str = "1G", xmx: str = "2G", eula: bool = False, new: bool = True, server_uuid: str | None = None) -> None:
+        with open(os.path.join(self.root_dir, "servers", self.server_root_dir, 'eula.txt'), 'w') as f:
+            f.write("eula=" + str(self.eula).lower())
+
+        with open(os.path.join(self.root_dir, "servers", self.server_root_dir, 'breadUI_metadata.json'), 'w') as f:
+            json.dump(self.to_dict(), f, indent=4)
+
+        with open(os.path.join(self.root_dir, "servers", self.server_root_dir, 'server.properties'), 'a') as f:
+            values = self.to_dict()
+            for k in values.keys():
+                if k == "max_player":
+                    f.write(f"max-players={values[k]}\n")
+                elif k == "port":
+                    f.write(f"server-port={values[k]}\n")
+                elif k == "name":
+                    f.write(f"motd={values[k]}\n")
+
+    def download_server_file(self, tries=3) -> bool:
+        print("downloading server")
+        dest = str(Path(self.executable_full_path) / "server.jar")
+        if self.software == 'paper':
+            version_idx  = get_paper_versions().index(self.version)
+            r = download_paper(version_idx, dest)
+            if r != 0:
+                print("Failed to download paper server :(")
+                match r:
+                    case 1:
+                        print("Invalid version index")
+                    case 3:
+                        print("Network or API error")
+                    case 4:
+                        print("No builds availables")
+                    case 5:
+                        print("Failed to create server file")
+                print("Retrying", tries - 1)
+                if tries > 0:
+                    return self.download_server_file(tries=tries - 1)
+                else:
+                    return False
+            else:
+                print("Downloaded server")
+            if self.has_server_file():
+                return True
+            else:
+                if tries > 0:
+                    return self.download_server_file(tries=tries - 1)
+                else:
+                    return False
+            
+        elif self.software == 'vanilla':
+            version_idx  = get_vanilla_versions().index(self.version)
+            download_vanilla(version_idx, dest)
+            if self.has_server_file():
+                return True
+            else:
+                return self.download_server_file(tries=tries - 1)
+
+        else:
+            self.can_start = False
+            print("invalid software, cant download")
+            return False
+        
+    def __init__(self, name: str, description: str, version: str, software: str, max_player: int, port: int, gen_id: bool = True, server_list: list | None = None, xms: str = "1G", xmx: str = "2G", eula: bool = False, new: bool = True, server_uuid: str | None = None, create_files=None) -> None:
         self.name: str = name
         self.version: str = version
         self.software: str = software
@@ -71,7 +140,12 @@ class Server:
         self.handle_output_thread: threading.Thread = threading.Thread(target=self.handle_output)
         self.can_start: bool = True
         self.show_output = True
-        self.port = port
+        self.port: int = port
+        self.eula: bool = eula
+        if create_files is None:
+            self.create_files = not new
+        else:
+            self.create_files = create_files
 
         if self.software not in ['paper', 'vanilla']:
             self.can_start = False
@@ -86,37 +160,15 @@ class Server:
                 if server_list is None:
                     server_list = []
                 self.gen_id(server_list)
-
             if os.path.exists(self.executable_full_path) and os.path.isdir(self.executable_full_path):
                 self.can_start = False
                 print("server executable already exist and is a directory")
             else:
-                os.mkdir(self.executable_full_path)
-                # shutil.copy(os.path.join(self.root_dir, "server.jar"), self.executable_full_path)
-                if software == 'paper':
-                    download_paper(get_paper_versions().index(self.version), self.executable_full_path)
-                elif software == 'vanilla':
-                    download_vanilla(get_vanilla_versions().index(self.version), self.executable_full_path)
-
-                else:
-                    self.can_start = False
-                    print("invalid software, cant download")
-
-                with open(os.path.join(self.root_dir, "servers", self.server_root_dir, 'eula.txt'), 'w') as f:
-                    f.write("eula=" + str(eula).lower())
-
-                with open(os.path.join(self.root_dir, "servers", self.server_root_dir, 'breadUI_metadata.json'), 'w') as f:
-                    json.dump(self.to_dict(), f, indent=4)
-
-                with open(os.path.join(self.root_dir, "servers", self.server_root_dir, 'server.properties'), 'a') as f:
-                    values = self.to_dict()
-                    for k in values.keys():
-                        if k == "max_player":
-                            f.write(f"max-players={values[k]}\n")
-                        elif k == "port":
-                            f.write(f"server-port={values[k]}\n")
-                        elif k == "name":
-                            f.write(f"motd={values[k]}\n")
+                if self.create_files:
+                    self.create_server_files()
+                    r = self.download_server_file()
+                    if not r:
+                        self.can_start = False
 
     def stop(self) -> int:
         if self.running and self.process.stdin:
